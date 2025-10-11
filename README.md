@@ -6,10 +6,10 @@ SkillLink is a mini social media platform for connecting users based on skills, 
 
 ## **Table of Contents**
 
-1. [Project Overview](#project-overview)  
-2. [Features](#features)  
-3. [Technologies Used](#technologies-used)  
-4. [Backend Setup](#backend-setup)  
+1. [Project Overview](#project-overview)                   (done)
+2. [Features](#features)                                   (done)
+3. [Technologies Used](#technologies-used)                 (done)
+4. [Backend Setup](#backend-setup)                         
 5. [Frontend Setup](#frontend-setup)  
 6. [Database Schema](#database-schema)  
 7. [API Endpoints](#api-endpoints)  
@@ -61,5 +61,3 @@ This project is a complete **full-stack application**, with backend APIs tested 
 - Git & GitHub  
 
 ---
-/skilllink.git
-cd skilllink/skilllink-backend
