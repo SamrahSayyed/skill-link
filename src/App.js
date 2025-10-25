@@ -41,19 +41,19 @@ function App() {
               <SignUpPage />
             </Layout>
           } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            <Layout showFooter={false}>
-              <DashboardPage />
-            </Layout>
-          } 
-        />
+        /> 
+        <Route
+  path="/dashboard"
+  element={
+    <Layout showFooter={false} useDefaultNavbar={false}>
+      <DashboardPage />
+    </Layout>
+  }
+/>
         <Route 
           path="/profile" 
           element={
-            <Layout showFooter={false}>
+            <Layout showFooter={false} useMiniNavbar={true}>
               <ProfilePage />
             </Layout>
           } 
@@ -61,7 +61,7 @@ function App() {
         <Route 
           path="/connections" 
           element={
-            <Layout showFooter={false}>
+            <Layout showFooter={false} useMiniNavbar={true}>
               <ConnectionsPage />
             </Layout>
           } 
@@ -69,7 +69,7 @@ function App() {
         <Route 
           path="/create-post" 
           element={
-            <Layout showFooter={false}>
+            <Layout showFooter={false} useMiniNavbar={true}>
               <PostCreationPage />
             </Layout>
           } 
