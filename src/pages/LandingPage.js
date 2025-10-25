@@ -1,6 +1,11 @@
 import React from "react";
 import heroImage from "../assets/LandingPage/landing-page-hero.png";
 import aboutImage from "../assets/LandingPage/landing-page-about_1.png";
+import feature1 from "../assets/LandingPage/landing-page-features_1.png";
+import feature2 from "../assets/LandingPage/landing-page-features_2.png";
+import feature3 from "../assets/LandingPage/landing-page-features_3.png";
+import feature4 from "../assets/LandingPage/landing-page-features_4.png";
+import cta from "../assets/LandingPage/landing-page-cta.png";
 function LandingPage() {
   return (
     <>
@@ -45,44 +50,74 @@ function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 lg:px-0">
-          <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
-            <img src="/assets/connect.png" alt="Connect" className="w-20 h-20 mb-4" />
-            <h3 className="text-lg font-semibold text-maintextblack">Connect with peers</h3>
-          </div>
-          <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
-            <img src="/assets/projects.png" alt="Projects" className="w-20 h-20 mb-4" />
-            <h3 className="text-lg font-semibold text-maintextblack">Showcase projects</h3>
-          </div>
-          <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
-            <img src="/assets/collaborate.png" alt="Collaborate" className="w-20 h-20 mb-4" />
-            <h3 className="text-lg font-semibold text-maintextblack">Collaborate on skills</h3>
-          </div>
-          <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
-            <img src="/assets/learn.png" alt="Learn" className="w-20 h-20 mb-4" />
-            <h3 className="text-lg font-semibold text-maintextblack">Learn together</h3>
-          </div>
-        </div>
-      </section>
+      <section className="py-40 bg-gray-50">
+      <div className="max-w-6xl mx-auto px-6 lg:px-0 text-center">
+      {/* Section Title */}
+      <h2 className="text-5xl font-bold text-maintextblack mb-40">Features</h2>
+
+      {/* Feature Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
+        <img src={feature1} alt="Connect" className="md:w-[310px] md:h-[200px] mb-4" />
+        <h3 className="text-lg font-semibold text-maintextblack">Collaborate on Skills</h3>
+      </div>
+
+      <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
+        <img src={feature2} alt="Projects" className="md:w-[310px] md:h-[200px] mb-4" />
+        <h3 className="text-lg font-semibold text-maintextblack">Learn Together</h3>
+      </div>
+
+      <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
+        <img src={feature3} alt="Collaborate" className="md:w-[310px] md:h-[200px] mb-4" />
+        <h3 className="text-lg font-semibold text-maintextblack">Showcase Projects</h3>
+      </div>
+
+      <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
+        <img src={feature4} alt="Learn" className="md:w-[310px] md:h-[200px] mb-4" />
+        <h3 className="text-lg font-semibold text-maintextblack">Connect with peers</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       {/* CTA Section */}
-      <section className="py-20 bg-primaryblue text-white">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-10 px-6 lg:px-0">
-          <div className="flex-1">
-            <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
-            <p className="mb-6">
-              Join Skill Link today and start connecting with like-minded peers to grow your skills and projects.
-            </p>
-            <button className="bg-white text-primaryblue px-6 py-3 rounded-lg font-semibold hover:bg-accentpink hover:text-white transition-colors duration-200">
-              Create an Account
+      <section className="relative bg-white py-32 overflow-hidden">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-6 lg:px-12">
+        
+        {/* LEFT SIDE – Text */}
+        <div className="text-center md:text-left flex-[0.7] z-10">
+          <p className="text-lg text-black">
+            Join the Skill Link community!
+          </p>
+          <p className="text-lg text-black mb-8">
+            Meet awesome people, explore new projects, and grow your skills together. Collaboration starts with one click - ready to dive in?
+            </p> 
+            
+          
+        </div>
+
+        {/* RIGHT SIDE – Gradient Shape + Image + Button */}
+        <div className="relative flex-1 mt-16 md:mt-0">
+          {/* Gradient Rectangle (tilted background) */}
+          <div
+            className="absolute right-[-50%] top-1/2 transform -translate-y-1/2 rotate-[30deg] w-[900px] h-[1300px] bg-gradient-to-br from-primaryblue to-accentpink rounded-3xl opacity-90"
+          ></div>
+
+          {/* Image + CTA Button on top */}
+          <div className="relative z-10 flex flex-col items-center justify-center md:ml-[200px]">
+            <img
+              src={cta}
+              alt="CTA Illustration"
+              className="w-[300px] md:w-[400px] object-contain mb-6"
+            />
+            <button className="bg-white text-black px-8 py-3 rounded-2xl text-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+              Sign Up
             </button>
           </div>
-          <div className="flex-1">
-            <img src="/assets/cta-image.png" alt="CTA Graphic" className="w-full max-w-md mx-auto" />
-          </div>
         </div>
-      </section>
+      </div>
+    </section>
     </>
   );
 }
