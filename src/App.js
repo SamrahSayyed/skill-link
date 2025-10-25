@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+import Layout from './components/Layout';
+
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -13,16 +15,67 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/connections" element={<ConnectionsPage />} />
-        <Route path="/create-post" element={<PostCreationPage />} />
+        {/* LandingPage with footer */}
+        <Route 
+          path="/" 
+          element={
+            <Layout showFooter={true}>
+              <LandingPage />
+            </Layout>
+          } 
+        />
+
+        {/* Pages without footer */}
+        <Route 
+          path="/login" 
+          element={
+            <Layout showFooter={false}>
+              <LoginPage />
+            </Layout>
+          } 
+        />
+        <Route 
+          path="/signup" 
+          element={
+            <Layout showFooter={false}>
+              <SignUpPage />
+            </Layout>
+          } 
+        />
+        <Route 
+          path="/dashboard" 
+          element={
+            <Layout showFooter={false}>
+              <DashboardPage />
+            </Layout>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <Layout showFooter={false}>
+              <ProfilePage />
+            </Layout>
+          } 
+        />
+        <Route 
+          path="/connections" 
+          element={
+            <Layout showFooter={false}>
+              <ConnectionsPage />
+            </Layout>
+          } 
+        />
+        <Route 
+          path="/create-post" 
+          element={
+            <Layout showFooter={false}>
+              <PostCreationPage />
+            </Layout>
+          } 
+        />
       </Routes>
     </Router>
-    
   );
 }
 

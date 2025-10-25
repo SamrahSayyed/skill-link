@@ -6,7 +6,7 @@ export default function Navbar() {
     <nav className="bg-gradient-to-r from-primaryblue via-gradientmid to-accentpink shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         {/* Brand */}
-        <Link to="/" className="text-xl font-medium text-white">
+        <Link to="/" className="text-2xl font-medium text-white">
           Skill Link
         </Link>
 
