@@ -1,6 +1,6 @@
 // src/components/ProfileAvatar.js
 import React from "react";
-import { useUser } from "../context/userContext";
+import { useUser } from "../context/UserContext";
 
 export default function ProfileAvatar({ profileImage, username, size = "w-10 h-10", onClick }) {
   const { getProfileImage } = useUser();

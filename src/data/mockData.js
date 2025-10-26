@@ -1,4 +1,3 @@
-// src/data/mockData.js
 export const users = [
   { id: 1, username: "Samrah", email: "samrah@example.com", location: "Pune", bio: "Aspiring AI/ML Engineer", profilePic: "" },
   { id: 2, username: "Aarav", email: "aarav@example.com", location: "Mumbai", bio: "Frontend dev", profilePic: "" },

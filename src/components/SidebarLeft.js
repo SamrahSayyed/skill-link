@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
-import { useUser } from "../context/userContext";
+import { useUser } from "../context/UserContext";
 import home from "../assets/IconsLogos/home-icon.png";
 import people from "../assets/IconsLogos/people-icon.png";
 import profile from "../assets/IconsLogos/profile-icon.png";
