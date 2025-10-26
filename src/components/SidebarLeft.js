@@ -3,6 +3,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
 import { useUser } from "../context/userContext";
+import home from "../assets/IconsLogos/home-icon.png";
+import people from "../assets/IconsLogos/people-icon.png";
+import profile from "../assets/IconsLogos/profile-icon.png";
 
 export default function SidebarLeft() {
   const { user } = useUser();
@@ -18,9 +21,9 @@ export default function SidebarLeft() {
       </div>
 
       <nav className="flex flex-col gap-2">
-        <Link to="/dashboard" className="px-3 py-2 rounded hover:bg-gray-100">Home</Link>
-        <Link to="/connections" className="px-3 py-2 rounded hover:bg-gray-100">People</Link>
-        <Link to="/profile" className="px-3 py-2 rounded hover:bg-gray-100">Profile</Link>
+        <Link to="/dashboard" className="px-3 py-2 rounded hover:bg-gray-100 flex flex-row items-center gap-3"><img src={home} className="w-6 h-6"></img>Home</Link>
+        <Link to="/connections" className="px-3 py-2 rounded hover:bg-gray-100 flex flex-row items-center gap-3"><img src={people} className="w-6 h-6"></img>People</Link>
+        <Link to="/profile" className="px-3 py-2 rounded hover:bg-gray-100 flex flex-row items-center gap-3"><img src={profile} className="w-6 h-6"></img>Profile</Link>
       </nav>
 
       <div className="mt-auto text-xs text-gray-500">

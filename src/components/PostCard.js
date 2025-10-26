@@ -18,10 +18,10 @@ export default function PostCard({ post }) {
       <p className="mb-3">{post.content}</p>
 
       <div className="flex items-center gap-4 text-sm">
-        <button onClick={() => setLiked(!liked)} className={`px-2 py-1 rounded ${liked ? "text-primaryblue" : "text-gray-600"}`}>
+        <button onClick={() => setLiked(!liked)} className={`px-2 py-1 rounded ${liked ? "text-red-600" : "text-gray-600"}`}>
           {liked ? "♥ Liked" : "♡ Like"}
         </button>
-        <button className="text-gray-600">💬 Comment</button>
+        <button className="text-gray-600">Comment</button>
       </div>
     </div>
   );

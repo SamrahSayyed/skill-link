@@ -64,7 +64,7 @@ export default function DashboardPage() {
             <form onSubmit={handlePostSubmit} className="flex items-center gap-3">
               <img src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}`} alt="me" className="w-10 h-10 rounded-full" />
               <input name="content" className="flex-1 border rounded-full px-4 py-2 focus:outline-none" placeholder="What's on your mind?" />
-              <button type="submit" className="bg-primaryblue text-white px-4 py-2 rounded-full">Post</button>
+              <button type="submit" className="bg-primaryblue text-white px-4 py-2 rounded-full  hover:bg-accentpink transition">Post</button>
             </form>
           </div>
 

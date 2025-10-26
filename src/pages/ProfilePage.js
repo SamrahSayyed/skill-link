@@ -40,10 +40,10 @@ export default function ProfilePage() {
           <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
             <h3 className="font-semibold mb-3">Top Skills</h3>
             <div className="flex gap-3 flex-wrap">
-              <span className="px-3 py-2 bg-gray-100 rounded-lg">React</span>
-              <span className="px-3 py-2 bg-gray-100 rounded-lg">Node</span>
-              <span className="px-3 py-2 bg-gray-100 rounded-lg">SQL</span>
-              <span className="px-3 py-2 bg-gray-100 rounded-lg">Machine Learning</span>
+              <span className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-accentpink transition hover:bg-opacity-40">React</span>
+              <span className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-primaryblue transition hover:bg-opacity-40">Node</span>
+              <span className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-accentpink transition hover:bg-opacity-40">SQL</span>
+              <span className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-primaryblue transition hover:bg-opacity-40">Machine Learning</span>
             </div>
           </div>
 
