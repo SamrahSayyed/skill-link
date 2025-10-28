@@ -1,33 +1,25 @@
 // src/components/SidebarLeft.js
 import React from "react";
-import { Link } from "react-router-dom";
-import ProfileAvatar from "./ProfileAvatar";
-import { useUser } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 import home from "../assets/IconsLogos/home-icon.png";
 import people from "../assets/IconsLogos/people-icon.png";
 import profile from "../assets/IconsLogos/profile-icon.png";
 
 export default function SidebarLeft() {
-  const { user } = useUser();
+  const navigate = useNavigate();
 
   return (
-    <aside className="w-72 bg-gray-50 border-r p-6 flex flex-col">
-      <div className="flex items-center gap-4 mb-6">
-        <ProfileAvatar profileImage={user.profilePic} username={user.username} size="w-16 h-16" />
-        <div>
-          <h3 className="font-semibold text-maintextblack">{user.username}</h3>
-          <p className="text-sm text-gray-600">{user.email}</p>
-        </div>
+    <aside className="flex flex-col w-60 bg-gray-50 p-4 gap-6">
+      <div className="flex flex-col items-center bg-white p-4 rounded shadow">
+        {/* placeholder - Profile shown in page instead */}
+        <div className="w-20 h-20 rounded-full bg-gray-200" />
+        <h2 className="font-semibold text-lg mt-3">User</h2>
       </div>
 
-      <nav className="flex flex-col gap-2">
-        <Link to="/dashboard" className="px-3 py-2 rounded hover:bg-gray-100 flex flex-row items-center gap-3"><img src={home} className="w-6 h-6"></img>Home</Link>
-        <Link to="/connections" className="px-3 py-2 rounded hover:bg-gray-100 flex flex-row items-center gap-3"><img src={people} className="w-6 h-6"></img>People</Link>
-        <Link to="/profile" className="px-3 py-2 rounded hover:bg-gray-100 flex flex-row items-center gap-3"><img src={profile} className="w-6 h-6"></img>Profile</Link>
-      </nav>
-
-      <div className="mt-auto text-xs text-gray-500">
-        © 2025 Your Name
+      <div className="flex flex-col gap-2 bg-white p-4 rounded shadow">
+        <button onClick={() => navigate("/dashboard")} className="text-left hover:text-primaryblue flex items-center gap-3"><img src={home} className="w-5 h-5" alt="home" /> Home</button>
+        <button onClick={() => navigate("/connections")} className="text-left hover:text-primaryblue flex items-center gap-3"><img src={people} className="w-6 h-6" alt="people" /> People</button>
+        <button onClick={() => navigate("/profile")} className="text-left hover:text-primaryblue flex items-center gap-3"><img src={profile} className="w-6 h-6" alt="profile" /> Profile</button>
       </div>
     </aside>
   );

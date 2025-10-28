@@ -1,27 +1,28 @@
 // src/components/PostCard.js
-import React, { useState } from "react";
+import React from "react";
 import ProfileAvatar from "./ProfileAvatar";
 
 export default function PostCard({ post }) {
-  const [liked, setLiked] = useState(false);
+  const displayName = post.displayName || post.username || post.name || "Unknown";
+  const displayAvatar = post.displayAvatar || post.userProfilePic || post.avatar || "";
+  const timeString = post.displayTime || post.time || post.date || new Date().toISOString();
+  const when = new Date(timeString);
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm">
-      <div className="flex items-center gap-3 mb-3">
-        <ProfileAvatar profileImage={post.userProfilePic} username={post.username} size="w-10 h-10" />
+      <div className="flex items-center gap-3 mb-2">
+        <ProfileAvatar name={displayName} profileImage={displayAvatar} />
         <div>
-          <div className="font-semibold">{post.username}</div>
-          <div className="text-xs text-gray-500">{new Date(post.time).toLocaleString()}</div>
+          <h3 className="font-semibold">{displayName}</h3>
+          <p className="text-sm text-gray-500">{when.toLocaleString()}</p>
         </div>
       </div>
 
-      <p className="mb-3">{post.content}</p>
+      <div className="whitespace-pre-wrap">{post.content}</div>
 
-      <div className="flex items-center gap-4 text-sm">
-        <button onClick={() => setLiked(!liked)} className={`px-2 py-1 rounded ${liked ? "text-red-600" : "text-gray-600"}`}>
-          {liked ? "♥ Liked" : "♡ Like"}
-        </button>
-        <button className="text-gray-600">Comment</button>
+      <div className="flex gap-3 mt-3">
+        <button className="text-sm">Like</button>
+        <button className="text-sm">Comment</button>
       </div>
     </div>
   );

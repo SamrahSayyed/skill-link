@@ -1,18 +1,29 @@
-import React, { createContext, useContext, useState } from "react";
+// src/context/UserContext.js
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getCurrentUser } from "../api/dataService";
 
-// Create Context
-const UserContext = createContext(null);
+const UserContext = createContext();
 
-// Provider
-export const UserProvider = ({ children }) => {
+export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const savedUser = getCurrentUser();
+    if (savedUser) setUser(savedUser);
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("currentUser");
+    setUser(null);
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, logout }}>
       {children}
     </UserContext.Provider>
   );
-};
+}
 
-// Custom hook
-export const useUser = () => useContext(UserContext);
+export function useUser() {
+  return useContext(UserContext);
+}

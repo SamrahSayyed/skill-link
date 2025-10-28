@@ -1,48 +1,67 @@
+// src/data/mockData.js
+import {image1} from "../assets/MockImages/mock-images-image1.png";
+import {image2} from "../assets/MockImages/mock-images-image2.png";
+import {image3} from "../assets/MockImages/mock-images-image3.png";
+import {image4} from "../assets/MockImages/mock-images-image4.png";
+import {image5} from "../assets/MockImages/mock-images-image5.png";
+import {image6} from "../assets/MockImages/mock-images-image6.png";
+
 export const users = [
-  { id: 1, username: "Samrah", email: "samrah@example.com", location: "Pune", bio: "Aspiring AI/ML Engineer", profilePic: "" },
-  { id: 2, username: "Aarav", email: "aarav@example.com", location: "Mumbai", bio: "Frontend dev", profilePic: "" },
-  { id: 3, username: "Riya", email: "riya@example.com", location: "Delhi", bio: "Fullstack dev", profilePic: "" },
-  { id: 4, username: "Karan", email: "karan@example.com", location: "Bengaluru", bio: "Backend dev", profilePic: "" }
-];
-
-// current logged-in user (mock)
-export const currentUser = {
-  id: 1,
-  username: "Samrah",
-  email: "samrah@example.com",
-  location: "Pune",
-  bio: "Aspiring AI/ML Engineer",
-  profilePic: "" // empty => will show fallback avatar
-};
-
-// connection requests (people who requested current user)
-export const connectionRequests = [
-  { id: 2, name: "Aarav", profilePic: "" },
-  { id: 3, name: "Riya", profilePic: "" }
-];
-
-// connections (accepted)
-export const connections = [
-  { id: 3, name: "Riya", profilePic: "" },
-  { id: 4, name: "Karan", profilePic: "" }
-];
-
-// posts (recent posts from connections)
-export const posts = [
   {
-    id: 101,
-    userId: 3,
-    username: "Riya",
-    userProfilePic: "",
-    time: "2025-10-25T09:30:00.000Z",
-    content: "Shared a new project: real-time chat app!"
+    id: 1,
+    name: "John Doe",
+    email: "john@example.com",
+    password: "123456",
+    headline: "Web Developer at SkillLink",
+    avatar: "/avatars/user1.pn",
   },
   {
-    id: 102,
-    userId: 4,
-    username: "Karan",
-    userProfilePic: "",
-    time: "2025-10-24T15:10:00.000Z",
-    content: "Wired up database migrations today — felt great!"
-  }
+    id: 2,
+    name: "Jane Smith",
+    email: "jane@example.com",
+    password: "abcdef",
+    headline: "Data Analyst",
+    avatar: "/avatars/user2.png",
+  },
+  {
+    id: 3,
+    name: "Robert Brown",
+    email: "robert@example.com",
+    password: "pass789",
+    headline: "AI Research Intern",
+    avatar: "/avatars/user3.png",
+  },
 ];
+
+export const posts = [
+  {
+    id: 1,
+    authorId: 1,
+    content: "Excited to share my new SkillLink project!",
+    date: "2025-10-25",
+    likes: 12,
+  },
+  {
+    id: 2,
+    authorId: 2,
+    content: "Loving how the dashboard UI is shaping up!",
+    date: "2025-10-26",
+    likes: 8,
+  },
+];
+
+export const comments = [
+  { id: 1, postId: 1, userId: 2, content: "That looks awesome!" },
+];
+
+export const postLikes = [{ postId: 1, userId: 2 }];
+
+export const connections = [
+  { id: 1, requesterId: 1, receiverId: 2, status: "accepted" },
+];
+
+export const connectionRequests = [
+  { id: 101, requesterId: 2, receiverId: 1, status: "pending" },
+];
+
+export const currentUser = null;

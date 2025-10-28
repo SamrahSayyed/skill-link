@@ -1,30 +1,41 @@
 // src/App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import ConnectionsPage from "./pages/ConnectionsPage";
 import PostCreationPage from "./pages/PostCreationPage";
-import LandingPage from "./pages/LandingPage"; // your existing LandingPage (wrapped by Layout)
-import LoginPage from "./pages/LoginPage"; // if present
-import SignUpPage from "./pages/SignUpPage"; // if present
+
 import Layout from "./components/Layout";
+import { useUser } from "./context/UserContext";
+
+/**
+ * Protected route - renders element only if user exists, else redirect to login
+ */
+function ProtectedRoute({ children }) {
+  const { user } = useUser();
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout showFooter={true}><LandingPage /></Layout>} />
-        <Route path="/login" element={<Layout showFooter={false}><LoginPage /></Layout>} />
-        <Route path="/signup" element={<Layout showFooter={false}><SignUpPage /></Layout>} />
+    <Routes>
+      <Route path="/" element={<Layout showFooter={true}><LandingPage /></Layout>} />
+      <Route path="/login" element={<Layout showFooter={false}><LoginPage /></Layout>} />
+      <Route path="/signup" element={<Layout showFooter={false}><SignUpPage /></Layout>} />
 
-        {/* Logged-in pages: Layout without default navbar, we use MiniNavbar inside pages */}
-        <Route path="/dashboard" element={<Layout showFooter={false} useDefaultNavbar={false}><DashboardPage /></Layout>} />
-        <Route path="/profile" element={<Layout showFooter={false} useDefaultNavbar={false}><ProfilePage /></Layout>} />
-        <Route path="/connections" element={<Layout showFooter={false} useDefaultNavbar={false}><ConnectionsPage /></Layout>} />
-        <Route path="/create-post" element={<Layout showFooter={false} useDefaultNavbar={false}><PostCreationPage /></Layout>} />
-      </Routes>
-    </Router>
+      <Route path="/dashboard" element={<Layout showFooter={false} useDefaultNavbar={false}><ProtectedRoute><DashboardPage /></ProtectedRoute></Layout>} />
+      <Route path="/profile" element={<Layout showFooter={false} useDefaultNavbar={false}><ProtectedRoute><ProfilePage /></ProtectedRoute></Layout>} />
+      <Route path="/connections" element={<Layout showFooter={false} useDefaultNavbar={false}><ProtectedRoute><ConnectionsPage /></ProtectedRoute></Layout>} />
+      <Route path="/create-post" element={<Layout showFooter={false} useDefaultNavbar={false}><ProtectedRoute><PostCreationPage /></ProtectedRoute></Layout>} />
+
+      {/* fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
