@@ -1,52 +1,65 @@
-// src/pages/SignupPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { createUser } from "../api/dataService";
 
 export default function SignupPage() {
-  const [username, setUsername] = useState("");
+  const { signup } = useUser();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { setUser } = useUser();
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!username || !email || !password || !confirmPassword) {
-      alert("Please fill all fields");
-      return;
-    }
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    setLoading(true);
-    try {
-      const newUser = await createUser({ username, email, password });
-      setUser(newUser);
-      navigate("/dashboard");
-    } catch (err) {
-      alert(err.message || "Error creating account");
-    } finally {
-      setLoading(false);
-    }
+    const success = signup(name, email, password);
+    if (success) navigate("/dashboard");
+    else setError("Email already exists. Try logging in!");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" className="border rounded-lg p-3 focus:outline-none" required />
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" className="border rounded-lg p-3 focus:outline-none" required />
-          <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" className="border rounded-lg p-3 focus:outline-none" required />
-          <input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type="password" placeholder="Confirm Password" className="border rounded-lg p-3 focus:outline-none" required />
-          <button type="submit" disabled={loading} className="bg-primaryblue text-white py-3 rounded-lg">{loading ? "Creating..." : "Create account"}</button>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Sign Up</h2>
+        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="p-3 border rounded-md"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="p-3 border rounded-md"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="p-3 border rounded-md"
+          />
+          <button
+            type="submit"
+            className="bg-green-600 hover:bg-green-700 text-white rounded-md py-2 font-semibold"
+          >
+            Sign Up
+          </button>
         </form>
-        <p className="text-center text-sm mt-4">Already have an account? <button onClick={() => navigate("/login")} className="text-primaryblue">Log In</button></p>
+        <p className="mt-4 text-sm text-center text-gray-500">
+          Already have an account?{" "}
+          <span
+            onClick={() => navigate("/")}
+            className="text-blue-600 cursor-pointer font-semibold"
+          >
+            Login
+          </span>
+        </p>
       </div>
     </div>
   );

@@ -1,41 +1,59 @@
-// src/pages/LoginPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { loginUser } from "../api/dataService";
 
 export default function LoginPage() {
+  const { login } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { setUser } = useUser();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const u = await loginUser(email, password);
-      setUser(u);
-      navigate("/dashboard");
-    } catch (err) {
-      alert(err.message || "Invalid credentials");
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const success = await login(email, password);
+  if (success) {
+    navigate("/dashboard");
+  } else {
+    alert("Invalid email or password");
+  }
+};
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="border rounded-lg p-3 focus:outline-none" required />
-          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="border rounded-lg p-3 focus:outline-none" required />
-          <button type="submit" className="bg-primaryblue text-white py-3 rounded-lg">{loading ? "Logging in..." : "Login"}</button>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="p-3 border rounded-md"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="p-3 border rounded-md"
+          />
+          <button
+            type="submit"
+            className="bg-primaryblue hover:bg-accentpink text-white rounded-md py-2 font-semibold"
+          >
+            Login
+          </button>
         </form>
-        <p className="text-center text-sm mt-4">
-          Don’t have an account? <button onClick={() => navigate("/signup")} className="text-primaryblue">Sign up</button>
+        <p className="mt-4 text-sm text-center text-gray-500">
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/signup")}
+            className="text-primaryblue hover:text-accentpink transition cursor-pointer font-semibold"
+          >
+            Sign Up
+          </span>
         </p>
       </div>
     </div>

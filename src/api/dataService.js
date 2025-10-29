@@ -1,87 +1,83 @@
 // src/api/dataService.js
+import { mockUsers, mockPosts, mockConnections } from "../data/mockData";
 
-import {
-  users,
-  posts,
-  comments,
-  connections,
-  postLikes,
-  connectionRequests,
-} from "../data/mockData";
-
-// 🧠 Mock functions (will later connect to backend APIs)
-
-// Basic Getters
-export const getUsers = async () => users;
-
-export const getCurrentUser = () => {
-  const saved = localStorage.getItem("currentUser");
-  return saved ? JSON.parse(saved) : null;
+export const getUsers = async () => {
+  return mockUsers;
 };
 
-export const getPosts = async () => posts;
-export const getComments = async () => comments;
-export const getConnections = async () => connections;
-export const getConnectionRequests = async () => connectionRequests;
-export const getPostLikes = async () => postLikes;
+export const getUserById = async (id) => {
+  return mockUsers.find((user) => user.id === id);
+};
 
-// Create Post (mock)
-export const createPost = async (newPost) => {
-  newPost.id = posts.length + 1;
-  posts.push(newPost);
+export const getPosts = async () => {
+  return mockPosts;
+};
+
+// Get the current logged-in user (mock)
+export const getCurrentUser = () => {
+  // You can later replace this logic with actual auth
+  return mockUsers[0]; // returns the first mock user as the logged-in user
+};
+
+
+export const getPostById = async (id) => {
+  return mockPosts.find((post) => post.id === id);
+};
+
+export const getConnections = async () => {
+  return mockConnections;
+};
+
+export const getConnectionById = async (id) => {
+  return mockConnections.find((conn) => conn.id === id);
+};
+
+// Simulate adding new post (mock backend)
+export const addPost = async (newPost) => {
+  mockPosts.push(newPost);
   return newPost;
 };
 
-// Connection Requests (mock)
-export const acceptConnection = async (requestId) => {
-  const request = connectionRequests.find((r) => r.id === requestId);
-  if (request) {
-    request.status = "accepted";
-    connections.push({
-      id: connections.length + 1,
-      requesterId: request.requesterId,
-      receiverId: request.receiverId,
-      status: "accepted",
-    });
-  }
-  return request;
+// Simulate adding connection
+export const addConnection = async (newConnection) => {
+  mockConnections.push(newConnection);
+  return newConnection;
 };
 
-export const rejectConnection = async (requestId) => {
-  const index = connectionRequests.findIndex((r) => r.id === requestId);
-  if (index !== -1) connectionRequests.splice(index, 1);
+// Simulate removing a connection
+export const removeConnection = async (id) => {
+  const index = mockConnections.findIndex((conn) => conn.id === id);
+  if (index !== -1) mockConnections.splice(index, 1);
   return true;
 };
 
-// 🔐 User Auth (mock)
-export async function createUser(form) {
-  const newUser = {
-    id: Date.now(),
-    name: form.username,
-    email: form.email,
-    password: form.password,
-    avatar: "/avatars/default.png",
-    headline: "New SkillLink Member",
-  };
-  users.push(newUser);
-  localStorage.setItem("currentUser", JSON.stringify(newUser));
-  return newUser;
-}
+// Mock implementation of pending requests
+export const getConnectionRequests = () => {
+  return mockConnections.filter(c => c.status === "pending");
+};
 
-export async function loginUser(email, password) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const user = users.find(
-        (u) =>
-          u.email.toLowerCase() === email.toLowerCase() &&
-          u.password === password
-      );
-      if (!user) {
-        reject(new Error("Invalid email or password"));
-      } else {
-        localStorage.setItem("currentUser", JSON.stringify(user));
-        resolve(user);
-      }
-    }, 500);
-  });
-}
+// Create a new post
+export const createPost = (userId, content) => {
+  const newPost = {
+    id: mockPosts.length + 1,
+    userId,
+    content,
+    timestamp: new Date().toISOString(),
+  };
+  mockPosts.unshift(newPost);
+  return newPost;
+};
+
+// Accept a connection
+export const acceptConnection = (connectionId) => {
+  const conn = mockConnections.find(c => c.id === connectionId);
+  if (conn) conn.status = "accepted";
+  return conn;
+};
+
+// Reject a connection
+export const rejectConnection = (connectionId) => {
+  const conn = mockConnections.find(c => c.id === connectionId);
+  if (conn) conn.status = "rejected";
+  return conn;
+};

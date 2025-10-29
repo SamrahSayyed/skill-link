@@ -111,7 +111,7 @@ function LandingPage() {
               alt="CTA Illustration"
               className="w-[300px] md:w-[400px] object-contain mb-6"
             />
-            <button className="bg-white text-black px-8 py-3 rounded-2xl text-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+            <button className="bg-gray-100 hover:bg-white text-black px-8 py-3 rounded-2xl text-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300">
               Sign Up
             </button>
           </div>

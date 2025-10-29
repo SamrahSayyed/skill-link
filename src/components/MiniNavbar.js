@@ -1,40 +1,53 @@
 // src/components/MiniNavbar.js
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
 export default function MiniNavbar() {
   const { user, logout } = useUser();
   const navigate = useNavigate();
+  const location = useLocation(); // to check current route
 
-  // If no user present, show minimal bar to avoid blank area
-  if (!user) {
-    return (
-      <nav className="flex items-center justify-between px-6 py-3 bg-gradient-to-r from-primaryblue to-accentpink text-white">
-        <div className="text-lg font-bold">Skill Link</div>
-        <div>
-          <button onClick={() => navigate("/login")} className="bg-white text-accentpink px-3 py-1 rounded-full">Login</button>
-        </div>
-      </nav>
-    );
-  }
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-gradient-to-r from-primaryblue to-accentpink text-white sticky top-0 z-20">
-      <div className="text-2xl font-bold cursor-pointer" onClick={() => navigate("/dashboard")}>Skill Link</div>
+    <nav className="bg-white shadow-md px-6 py-3 flex items-center justify-between">
+      <Link to="/dashboard" className="text-xl font-semibold text-gray-800">
+        SkillLink
+      </Link>
 
-      <div className="flex items-center gap-4">
-        <button onClick={() => navigate("/create-post")} className="bg-white text-accentpink px-4 py-2 rounded-full">Create Post</button>
+      {user && (
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            {/* ✅ Hide Create Post button only on Post Creation page */}
+            {location.pathname !== "/create-post" && (
+              <button
+                onClick={() => navigate("/create-post")}
+                className="bg-primaryblue text-white px-4 py-2 rounded-lg hover:bg-accentpink transition"
+              >
+                Create Post
+              </button>
+            )}
+          </div>
 
-        <img
-          src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username || "User")}`}
-          alt="Profile"
-          className="w-10 h-10 rounded-full cursor-pointer"
-          onClick={() => navigate("/profile")}
-        />
-
-        <button onClick={() => { logout(); navigate("/login"); }} className="text-white/90 hover:underline">Logout</button>
-      </div>
+          <div className="flex items-center gap-6">
+            <button
+              onClick={handleLogout}
+              className="text-sm text-red-500 hover:text-red-700 font-medium"
+            >
+              Logout
+            </button>
+            <img
+              src={user.profileImage}
+              alt={user.name}
+              className="w-8 h-8 rounded-full"
+            />
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
