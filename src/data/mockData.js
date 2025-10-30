@@ -1,6 +1,4 @@
-// src/data/mockData.js
-
-// ✅ Import local mock profile images
+// src/mockData.js
 import image1 from "../assets/MockImages/mock-images-image5.png";
 import image2 from "../assets/MockImages/mock-images-image1.png";
 import image3 from "../assets/MockImages/mock-images-image3.png";
@@ -8,7 +6,6 @@ import image4 from "../assets/MockImages/mock-images-image6.png";
 import image5 from "../assets/MockImages/mock-images-image4.png";
 import image6 from "../assets/MockImages/mock-images-image2.png";
 
-// ✅ Mock user data (used across Login, Profile, Dashboard, and Connections)
 export const mockUsers = [
   {
     id: 1,
@@ -78,57 +75,99 @@ export const mockUsers = [
   },
 ];
 
-// ✅ Mock post data (used in Dashboard)
 export const mockPosts = [
   {
     id: 1,
     userId: 1,
     content: "Exploring the new features in React 19. Hooks just got smarter!",
     timestamp: "2025-10-25T10:30:00Z",
+    post_likes: 24,
+    comments: [
+      {
+        id: 1,
+        userId: 2,
+        user_name: "Emily Carter",
+        user_profile_pic: image2,
+        comment_text: "Excited to try this out!",
+        timestamp: "2025-10-25T11:00:00Z",
+      },
+      {
+        id: 2,
+        userId: 3,
+        user_name: "Michael Singh",
+        user_profile_pic: image3,
+        comment_text: "React 19 really changed the game 🔥",
+        timestamp: "2025-10-25T11:45:00Z",
+      },
+    ],
   },
   {
     id: 2,
     userId: 2,
     content: "Designing minimal dashboards with TailwindCSS is so refreshing ✨",
     timestamp: "2025-10-26T09:15:00Z",
+    post_likes: 32,
+    comments: [
+      {
+        id: 3,
+        userId: 1,
+        user_name: "John Doe",
+        user_profile_pic: image1,
+        comment_text: "Your designs are always top-notch!",
+        timestamp: "2025-10-26T09:50:00Z",
+      },
+    ],
   },
   {
     id: 3,
     userId: 3,
     content: "Training an NLP model for sentiment analysis — loving the results so far!",
     timestamp: "2025-10-27T14:00:00Z",
+    post_likes: 18,
+    comments: [],
   },
   {
     id: 4,
     userId: 4,
     content: "Experimenting with GSAP animations for smooth UI transitions 🚀",
     timestamp: "2025-10-28T12:45:00Z",
+    post_likes: 15,
+    comments: [
+      {
+        id: 4,
+        userId: 2,
+        user_name: "Emily Carter",
+        user_profile_pic: image2,
+        comment_text: "GSAP is magic!",
+        timestamp: "2025-10-28T13:10:00Z",
+      },
+    ],
   },
   {
     id: 5,
     userId: 5,
     content: "Just finished building my ESP32 + Firebase project 🔥",
     timestamp: "2025-10-28T17:10:00Z",
+    post_likes: 29,
+    comments: [],
   },
   {
     id: 6,
     userId: 6,
     content: "Deploying a cloud-native CI/CD pipeline — automation at its best 💡",
     timestamp: "2025-10-29T09:00:00Z",
+    post_likes: 21,
+    comments: [],
   },
 ];
 
-// ✅ Mock connections (used in Connections page)
 export const mockConnections = [
-  // Accepted connections
   { id: 1, userId: 1, connections: [2, 3], status: "accepted", connectedAt: "2025-10-24T11:30:00Z" },
   { id: 2, userId: 2, connections: [1, 4], status: "accepted", connectedAt: "2025-10-25T14:20:00Z" },
   { id: 3, userId: 3, connections: [1, 5], status: "accepted", connectedAt: "2025-10-26T09:10:00Z" },
   { id: 4, userId: 4, connections: [2, 6], status: "accepted", connectedAt: "2025-10-27T08:50:00Z" },
   { id: 5, userId: 5, connections: [3, 6], status: "accepted", connectedAt: "2025-10-28T13:05:00Z" },
   { id: 6, userId: 6, connections: [4, 5], status: "accepted", connectedAt: "2025-10-29T10:15:00Z" },
-
-  // Pending requests
   { id: 7, userId: 1, connections: [4], status: "pending", connectedAt: "2025-10-29T12:00:00Z" },
   { id: 8, userId: 2, connections: [5], status: "pending", connectedAt: "2025-10-29T13:30:00Z" },
 ];
