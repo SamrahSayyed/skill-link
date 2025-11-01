@@ -31,6 +31,13 @@ export default function App() {
 
       <Route path="/dashboard" element={<Layout showFooter={false} useDefaultNavbar={false}><ProtectedRoute><DashboardPage /></ProtectedRoute></Layout>} />
       <Route path="/profile" element={<Layout showFooter={false} useDefaultNavbar={false}><ProtectedRoute><ProfilePage /></ProtectedRoute></Layout>} />
+      <Route path="/profile/:id" element={
+  <Layout showFooter={false} useDefaultNavbar={false}>
+    <ProtectedRoute>
+      <ProfilePage />
+    </ProtectedRoute>
+  </Layout>
+} />
       <Route path="/connections" element={<Layout showFooter={false} useDefaultNavbar={false}><ProtectedRoute><ConnectionsPage /></ProtectedRoute></Layout>} />
       <Route path="/create-post" element={<ProtectedRoute><PostCreationPage /></ProtectedRoute>}
 />

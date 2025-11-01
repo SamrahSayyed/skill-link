@@ -4,20 +4,19 @@ import SidebarLeft from "../components/SidebarLeft";
 import MiniNavbar from "../components/MiniNavbar";
 import { mockUsers } from "../data/mockData";
 import { useUser } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ConnectionsPage() {
   const { user } = useUser();
+  const navigate = useNavigate();
 
-  // Filter out the logged-in user from the connections list
   const connections = mockUsers.filter((u) => u.id !== user?.id);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <div className="flex flex-1">
-        {/* ✅ Left Sidebar */}
         <SidebarLeft />
 
-        {/* ✅ Main Content Area */}
         <main className="flex-1 p-6">
           <h2 className="text-xl font-semibold mb-4">Your Connections</h2>
 
@@ -25,7 +24,8 @@ export default function ConnectionsPage() {
             {connections.map((conn) => (
               <div
                 key={conn.id}
-                className="bg-white p-6 rounded-xl shadow flex flex-col items-center hover:shadow-md transition"
+                className="bg-white p-6 rounded-xl shadow flex flex-col items-center hover:shadow-md transition cursor-pointer"
+                onClick={() => navigate(`/profile/${conn.id}`)}
               >
                 <img
                   src={conn.profileImage}
