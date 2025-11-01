@@ -3,9 +3,12 @@ import SidebarLeft from "../components/SidebarLeft";
 import PostCard from "../components/PostCard";
 import { useUser } from "../context/UserContext";
 import { mockUsers, mockPosts } from "../data/mockData";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
   const { user } = useUser();
+  const navigate = useNavigate();
+
   const connections = mockUsers.filter((u) => u.id !== user?.id);
 
   const postsWithUser = mockPosts.map((p) => ({
@@ -19,23 +22,37 @@ export default function DashboardPage() {
         <SidebarLeft />
 
         <main className="flex-1 p-6 flex flex-col gap-4">
+          {/* ✅ Create Post Section */}
           <div className="bg-white p-4 rounded shadow">
             <div className="flex items-center gap-3">
-              <img src={user?.profileImage} alt={user?.name} className="w-10 h-10 rounded-full" />
+              <img
+                src={user?.profileImage}
+                alt={user?.name}
+                className="w-10 h-10 rounded-full"
+              />
               <input
                 type="text"
                 placeholder="What's on your mind?"
-                className="flex-1 border rounded-full px-4 py-2"
+                className="flex-1 border rounded-full px-4 py-2 cursor-pointer"
+                onClick={() => navigate("/create-post")}
                 readOnly
               />
+              <button
+                onClick={() => navigate("/create-post")}
+                className="bg-primaryblue text-white px-4 py-2 rounded-full hover:bg-accentpink transition"
+              >
+                Create Post
+              </button>
             </div>
           </div>
 
+          {/* ✅ Posts Feed */}
           {postsWithUser.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
         </main>
 
+        {/* ✅ Connections Section */}
         <aside className="w-64 bg-white p-4 shadow-lg rounded-lg m-4">
           <h3 className="font-semibold text-lg mb-3">Connections</h3>
           <div className="flex flex-col gap-3">
