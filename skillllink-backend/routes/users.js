@@ -40,6 +40,7 @@ router.get('/:id', async (req, res) => {
 // REGISTER user
 // ----------------------
 router.post('/register', async (req, res) => {
+   console.log('Register body:', req.body); // add this
   const { username, email, password_hash, location, bio } = req.body;
 
   if (!username || !email || !password_hash) {
@@ -54,6 +55,8 @@ router.post('/register', async (req, res) => {
       'INSERT INTO users (username, email, password_hash, location, bio) VALUES (?, ?, ?, ?, ?)',
       [username, email, hashedPassword, location, bio]
     );
+
+    console.log('Inserted user id:', result.insertId);
 
     res.status(201).json({
       id: result.insertId,

@@ -1,23 +1,41 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
 
 export default function LoginPage() {
-  const { login } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const success = await login(email, password);
-  if (success) {
-    navigate("/dashboard");
-  } else {
-    alert("Invalid email or password");
-  }
-};
+
+  // Optional: check if REACT_APP_API_URL is loaded
+  console.log("API URL:", process.env.REACT_APP_API_URL);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password_hash: password, // matches backend
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/dashboard");
+      } else {
+        setError(data.error || "Invalid email or password");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Server error. Try again later.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -31,6 +49,7 @@ const handleSubmit = async (e) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="p-3 border rounded-md"
+            required
           />
           <input
             type="password"
@@ -38,6 +57,7 @@ const handleSubmit = async (e) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="p-3 border rounded-md"
+            required
           />
           <button
             type="submit"
@@ -50,7 +70,7 @@ const handleSubmit = async (e) => {
           Don't have an account?{" "}
           <span
             onClick={() => navigate("/signup")}
-            className="text-primaryblue hover:text-accentpink transition cursor-pointer font-semibold"
+            className="text-primaryblue hover:text-accentpink cursor-pointer font-semibold"
           >
             Sign Up
           </span>

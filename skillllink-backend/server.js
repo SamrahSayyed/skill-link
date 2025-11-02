@@ -4,7 +4,16 @@ console.log(process.env.DB_USER, process.env.DB_PASSWORD, process.env.DB_HOST);
 const express = require('express');
 const db = require('./config/db');
 
+
 const app = express();
+
+
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://localhost:3000', // React frontend URL
+  credentials: true,
+}));
+
 app.use(express.json());
 
 const usersRouter = require('./routes/users');
@@ -41,5 +50,5 @@ app.get('/users', async (req, res) => {
   }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

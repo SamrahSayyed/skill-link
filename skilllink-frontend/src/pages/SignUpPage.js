@@ -1,21 +1,48 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
 
 export default function SignupPage() {
-  const { signup } = useUser();
-  const [name, setName] = useState("");
+
+  console.log('API URL:', process.env.REACT_APP_API_URL);
+
+  const [username, setUsername] = useState(""); // changed from 'name' to 'username'
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(""); // will be sent as password_hash
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const success = signup(name, email, password);
-    if (success) navigate("/dashboard");
-    else setError("Email already exists. Try logging in!");
-  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    // ← Replace your current fetch here with this:
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        email,
+        password_hash: password, // matches backend
+        location: "",
+        bio: "",
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem("user", JSON.stringify(data));
+      navigate("/dashboard");
+    } else {
+      setError(data.error || "Email already exists. Try logging in!");
+    }
+  } catch (err) {
+    console.error(err);
+    setError("Server error. Try again later.");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -25,10 +52,11 @@ export default function SignupPage() {
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <input
             type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="p-3 border rounded-md"
+            required
           />
           <input
             type="email"
@@ -36,6 +64,7 @@ export default function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="p-3 border rounded-md"
+            required
           />
           <input
             type="password"
@@ -43,6 +72,7 @@ export default function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="p-3 border rounded-md"
+            required
           />
           <button
             type="submit"
