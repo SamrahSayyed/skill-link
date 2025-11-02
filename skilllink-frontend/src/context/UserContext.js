@@ -1,57 +1,65 @@
 // src/context/UserContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getCurrentUser as dsGetCurrentUser } from "../api/dataService";
-import { mockUsers } from "../data/mockData";
+import axios from "axios";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState(mockUsers); // ✅ Keep mock user list for signup simulation
 
+  // 🔹 Backend base URL
+  const API_URL = "http://localhost:5000/api/users";
+
+  // 🔹 Load user from localStorage on app start
   useEffect(() => {
-    const currentUser = dsGetCurrentUser();
-    if (currentUser) setUser(currentUser);
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (loggedInUser) setUser(loggedInUser);
   }, []);
 
-  // ✅ LOGIN FUNCTION
-  const login = (email, password) => {
-    const foundUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (foundUser) {
-      setUser(foundUser);
-      localStorage.setItem("loggedInUser", JSON.stringify(foundUser));
-      return true;
+  // ---------------- LOGIN ----------------
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post(`${API_URL}/login`, {
+        email,
+        password_hash: password, // send raw password, backend hashes it
+      });
+
+      const loggedInUser = res.data.user;
+      setUser(loggedInUser);
+      localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+
+      return { success: true };
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.error || "Login failed. Try again.";
+      return { success: false, error: errorMessage };
     }
-    return false;
   };
 
-  // ✅ SIGNUP FUNCTION
-  const signup = (name, email, password) => {
-    const existingUser = users.find((u) => u.email === email);
-    if (existingUser) return false; // email already exists
+  // ---------------- SIGNUP ----------------
+  const signup = async ({ username, email, password }) => {
+    try {
+      const res = await axios.post(`${API_URL}/register`, {
+        username,
+        email,
+        password_hash: password, // backend hashes it
+        location: "",            // optional fields
+        bio: "",
+      });
 
-    const newUser = {
-      id: users.length + 1,
-      name,
-      email,
-      password,
-      profileImage: "",
-      bio: "",
-      location: "",
-      role: "",
-      skills: [],
-    };
+      const newUser = res.data;
+      setUser(newUser);
+      localStorage.setItem("loggedInUser", JSON.stringify(newUser));
 
-    const updatedUsers = [...users, newUser];
-    setUsers(updatedUsers);
-    setUser(newUser);
-    localStorage.setItem("loggedInUser", JSON.stringify(newUser));
-    return true;
+      return { success: true };
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.error || "Signup failed. Try again.";
+      return { success: false, error: errorMessage };
+    }
   };
 
-  // ✅ LOGOUT FUNCTION
+  // ---------------- LOGOUT ----------------
   const logout = () => {
     setUser(null);
     localStorage.removeItem("loggedInUser");
@@ -64,7 +72,7 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-// ✅ Custom hook
+// ---------------- CUSTOM HOOK ----------------
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {

@@ -1,20 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SidebarLeft from "../components/SidebarLeft";
 import PostCard from "../components/PostCard";
 import { useUser } from "../context/UserContext";
-import { mockUsers, mockPosts } from "../data/mockData";
 import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
   const { user } = useUser();
   const navigate = useNavigate();
 
-  const connections = mockUsers.filter((u) => u.id !== user?.id);
+  const [allUsers, setAllUsers] = useState([]); // all users from backend
+  const [posts, setPosts] = useState([]);
 
-  const postsWithUser = mockPosts.map((p) => ({
-    ...p,
-    user: mockUsers.find((u) => u.id === p.userId),
-  }));
+  // ----------------------
+  // Fetch all users
+  // ----------------------
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users`);
+        const data = await res.json();
+        setAllUsers(data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // ----------------------
+  // Fetch all posts
+  // ----------------------
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/posts`);
+        const data = await res.json();
+        setPosts(data);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  // ----------------------
+  // Map posts to user info
+  // ----------------------
+  const postsWithUser = posts.map((p) => {
+    const postUser = allUsers.find((u) => u.id === p.user_id);
+    return { ...p, user: postUser }; // attach user object to post
+  });
+
+  // ----------------------
+  // Connections (all users except logged-in)
+  // ----------------------
+  const connections = allUsers.filter((u) => u.id !== user?.id);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -22,12 +62,12 @@ export default function DashboardPage() {
         <SidebarLeft />
 
         <main className="flex-1 p-6 flex flex-col gap-4">
-          {/* ✅ Create Post Section */}
+          {/* Create Post Section */}
           <div className="bg-white p-4 rounded shadow">
             <div className="flex items-center gap-3">
               <img
-                src={user?.profileImage}
-                alt={user?.name}
+                src={user?.profileImage || "/default-avatar.png"}
+                alt={user?.username}
                 className="w-10 h-10 rounded-full"
               />
               <input
@@ -46,26 +86,26 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ✅ Posts Feed */}
+          {/* Posts Feed */}
           {postsWithUser.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
         </main>
 
-        {/* ✅ Connections Section */}
+        {/* Connections Section */}
         <aside className="w-64 bg-white p-4 shadow-lg rounded-lg m-4">
           <h3 className="font-semibold text-lg mb-3">Connections</h3>
           <div className="flex flex-col gap-3">
             {connections.map((conn) => (
               <div key={conn.id} className="flex items-center gap-3">
                 <img
-                  src={conn.profileImage}
-                  alt={conn.name}
+                  src={conn.profileImage || "/default-avatar.png"}
+                  alt={conn.username}
                   className="w-10 h-10 rounded-full"
                 />
                 <div>
-                  <p className="text-sm font-medium">{conn.name}</p>
-                  <p className="text-xs text-gray-500">{conn.role}</p>
+                  <p className="text-sm font-medium">{conn.username}</p>
+                  <p className="text-xs text-gray-500">{conn.role || "Member"}</p>
                 </div>
               </div>
             ))}

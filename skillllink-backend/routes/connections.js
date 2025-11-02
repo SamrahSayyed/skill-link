@@ -78,28 +78,30 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// ----------------------
-// GET all connections for a user
-// ----------------------
+// GET all accepted connections for a user with user details
 router.get('/:user_id', async (req, res) => {
   const { user_id } = req.params;
 
   try {
     const [rows] = await db.query(
-      `SELECT * FROM connections 
-       WHERE requester_id = ? OR addressee_id = ?`,
+      `SELECT u.id, u.username, u.profileImage, u.bio, c.status, c.created_at
+       FROM connections c
+       JOIN users u
+         ON (c.requester_id = ? AND u.id = c.addressee_id)
+         OR (c.addressee_id = ? AND u.id = c.requester_id)
+       WHERE c.status = 'accepted'`,
       [user_id, user_id]
     );
 
     if (rows.length === 0) return res.status(404).json({ error: 'No connections found for this user' });
 
     res.json(rows);
-
   } catch (err) {
     console.error('GET CONNECTIONS ERROR:', err);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // ----------------------
 // DELETE connection

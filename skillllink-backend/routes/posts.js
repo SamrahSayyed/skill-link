@@ -3,11 +3,24 @@ const router = express.Router();
 const db = require('../config/db');
 
 // ----------------------
-// GET all posts
+// GET all posts with user info
 // ----------------------
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM posts');
+    const [rows] = await db.query(`
+      SELECT 
+        posts.id AS post_id,
+        posts.user_id,
+        posts.content,
+        posts.post_image,
+        posts.post_likes,
+        posts.created_at,
+        users.username,
+        users.profileImage
+      FROM posts
+      LEFT JOIN users ON posts.user_id = users.id
+      ORDER BY posts.created_at DESC
+    `);
     res.json(rows);
   } catch (err) {
     console.error('GET ALL POSTS ERROR:', err);
@@ -16,15 +29,31 @@ router.get('/', async (req, res) => {
 });
 
 // ----------------------
-// GET posts by user
+// GET posts by user with user info
 // ----------------------
 router.get('/user/:user_id', async (req, res) => {
   const { user_id } = req.params;
   try {
-    const [rows] = await db.query('SELECT * FROM posts WHERE user_id = ?', [user_id]);
+    const [rows] = await db.query(`
+      SELECT 
+        posts.id AS post_id,
+        posts.user_id,
+        posts.content,
+        posts.post_image,
+        posts.post_likes,
+        posts.created_at,
+        users.username,
+        users.profileImage
+      FROM posts
+      LEFT JOIN users ON posts.user_id = users.id
+      WHERE posts.user_id = ?
+      ORDER BY posts.created_at DESC
+    `, [user_id]);
+
     if (rows.length === 0) {
       return res.status(404).json({ error: 'No posts found for this user' });
     }
+
     res.json(rows);
   } catch (err) {
     console.error('GET POSTS BY USER ERROR:', err);
@@ -33,25 +62,10 @@ router.get('/user/:user_id', async (req, res) => {
 });
 
 // ----------------------
-// GET single post by ID
-// ----------------------
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [rows] = await db.query('SELECT * FROM posts WHERE id = ?', [id]);
-    if (rows.length === 0) return res.status(404).json({ error: 'Post not found' });
-    res.json(rows[0]);
-  } catch (err) {
-    console.error('GET POST BY ID ERROR:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ----------------------
 // CREATE new post
 // ----------------------
 router.post('/', async (req, res) => {
-  const { user_id, content } = req.body;
+  const { user_id, content, post_image } = req.body;
 
   if (!user_id || !content) {
     return res.status(400).json({ error: 'user_id and content are required' });
@@ -59,28 +73,29 @@ router.post('/', async (req, res) => {
 
   try {
     const [result] = await db.query(
-      'INSERT INTO posts (user_id, content) VALUES (?, ?)',
-      [user_id, content]
+      'INSERT INTO posts (user_id, content, post_image) VALUES (?, ?, ?)',
+      [user_id, content, post_image || null]
     );
-    res.status(201).json({ id: result.insertId, user_id, content });
+
+    // Return the post with user info
+    const [rows] = await db.query(`
+      SELECT 
+        posts.id AS post_id,
+        posts.user_id,
+        posts.content,
+        posts.post_image,
+        posts.post_likes,
+        posts.created_at,
+        users.username,
+        users.profileImage
+      FROM posts
+      LEFT JOIN users ON posts.user_id = users.id
+      WHERE posts.id = ?
+    `, [result.insertId]);
+
+    res.status(201).json(rows[0]);
   } catch (err) {
     console.error('CREATE POST ERROR:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ----------------------
-// DELETE post
-// ----------------------
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const [result] = await db.query('DELETE FROM posts WHERE id = ?', [id]);
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Post not found' });
-    res.json({ message: 'Post deleted successfully' });
-  } catch (err) {
-    console.error('DELETE POST ERROR:', err);
     res.status(500).json({ error: err.message });
   }
 });

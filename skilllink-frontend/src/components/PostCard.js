@@ -3,9 +3,11 @@ import ProfileAvatar from "./ProfileAvatar";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
 
 export default function PostCard({ post }) {
-  const displayName = post.displayName || post.user_name || post.user?.name || "Unknown";
-  const displayAvatar = post.displayAvatar || post.user_profile_pic || post.user?.profileImage || "";
-  const time = post.timestamp ? new Date(post.timestamp) : null;
+  // Poster info from backend
+  const displayName = post.user_name || "Unknown";
+  const displayAvatar = post.user_profile_pic || "";
+
+  const time = post.created_at ? new Date(post.created_at) : null;
 
   // Local state for like and comments
   const [likes, setLikes] = useState(post.post_likes || 0);
@@ -40,7 +42,7 @@ export default function PostCard({ post }) {
 
           {/* Post Content */}
           <div className="mt-3 text-gray-800 whitespace-pre-wrap">
-            {post.post_text || post.content}
+            {post.content}
           </div>
 
           {/* Post Image (if any) */}
@@ -80,16 +82,16 @@ export default function PostCard({ post }) {
           {/* Comment Section */}
           {showComments && post.comments?.length > 0 && (
             <div className="mt-4 border-t border-gray-100 pt-3">
-              {post.comments.map((comment, index) => (
-                <div key={index} className="flex gap-3 mb-3">
+              {post.comments.map((comment) => (
+                <div key={comment.id} className="flex gap-3 mb-3">
                   <ProfileAvatar
-                    name={comment.user_name}
-                    profileImage={comment.user_profile_pic}
+                    name={comment.user_name || "Unknown"}
+                    profileImage={comment.user_profile_pic || ""}
                     size="w-10 h-10"
                   />
                   <div className="bg-gray-100 rounded-xl p-2 flex-1">
                     <div className="font-medium text-sm">
-                      {comment.user_name}
+                      {comment.user_name || "Unknown"}
                     </div>
                     <div className="text-sm text-gray-700">
                       {comment.comment_text}

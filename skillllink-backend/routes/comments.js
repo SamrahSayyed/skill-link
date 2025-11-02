@@ -1,13 +1,23 @@
-// routes/comments.js
 const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-// 🟢 Get all comments for a post
+// 🟢 Get all comments for a post with user info
 router.get("/:postId", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at DESC",
+      `SELECT 
+         comments.id AS comment_id,
+         comments.post_id,
+         comments.user_id,
+         comments.content AS comment_text,
+         comments.created_at,
+         users.username AS user_name,
+         users.profileImage AS user_profile_pic
+       FROM comments
+       LEFT JOIN users ON comments.user_id = users.id
+       WHERE comments.post_id = ?
+       ORDER BY comments.created_at DESC`,
       [req.params.postId]
     );
     res.json(rows);
@@ -16,15 +26,33 @@ router.get("/:postId", async (req, res) => {
   }
 });
 
-// 🟢 Add a comment
+// 🟢 Add a comment and return it with user info
 router.post("/", async (req, res) => {
   try {
     const { post_id, user_id, content } = req.body;
+
     const [result] = await pool.query(
       "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
       [post_id, user_id, content]
     );
-    res.json({ id: result.insertId, post_id, user_id, content });
+
+    // Fetch the newly created comment with user info
+    const [rows] = await pool.query(
+      `SELECT 
+         comments.id AS comment_id,
+         comments.post_id,
+         comments.user_id,
+         comments.content AS comment_text,
+         comments.created_at,
+         users.username AS user_name,
+         users.profileImage AS user_profile_pic
+       FROM comments
+       LEFT JOIN users ON comments.user_id = users.id
+       WHERE comments.id = ?`,
+      [result.insertId]
+    );
+
+    res.status(201).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

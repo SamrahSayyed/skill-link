@@ -1,48 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
-export default function SignupPage() {
-
-  console.log('API URL:', process.env.REACT_APP_API_URL);
-
-  const [username, setUsername] = useState(""); // changed from 'name' to 'username'
+export default function SignUpPage() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); // will be sent as password_hash
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const { signup } = useUser();
   const navigate = useNavigate();
 
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setError("");
 
-  try {
-    // ← Replace your current fetch here with this:
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        email,
-        password_hash: password, // matches backend
-        location: "",
-        bio: "",
-      }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      localStorage.setItem("user", JSON.stringify(data));
+    const result = await signup({ username, email, password });
+    if (result.success) {
       navigate("/dashboard");
     } else {
-      setError(data.error || "Email already exists. Try logging in!");
+      setError(result.error);
     }
-  } catch (err) {
-    console.error(err);
-    setError("Server error. Try again later.");
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -76,20 +55,11 @@ export default function SignupPage() {
           />
           <button
             type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white rounded-md py-2 font-semibold"
+            className="bg-primaryblue hover:bg-accentpink text-white rounded-md py-2 font-semibold"
           >
             Sign Up
           </button>
         </form>
-        <p className="mt-4 text-sm text-center text-gray-500">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/")}
-            className="text-blue-600 cursor-pointer font-semibold"
-          >
-            Login
-          </span>
-        </p>
       </div>
     </div>
   );

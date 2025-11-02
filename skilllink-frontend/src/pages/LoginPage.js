@@ -1,39 +1,24 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
-  // Optional: check if REACT_APP_API_URL is loaded
-  console.log("API URL:", process.env.REACT_APP_API_URL);
+  const { login } = useUser();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password_hash: password, // matches backend
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/dashboard");
-      } else {
-        setError(data.error || "Invalid email or password");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Server error. Try again later.");
+    const result = await login(email, password);
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
+      setError(result.error);
     }
   };
 

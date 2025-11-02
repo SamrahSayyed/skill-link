@@ -1,16 +1,34 @@
-// src/pages/ConnectionsPage.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SidebarLeft from "../components/SidebarLeft";
-import MiniNavbar from "../components/MiniNavbar";
-import { mockUsers } from "../data/mockData";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 export default function ConnectionsPage() {
   const { user } = useUser();
   const navigate = useNavigate();
+  const [allUsers, setAllUsers] = useState([]);
+  const [connections, setConnections] = useState([]);
 
-  const connections = mockUsers.filter((u) => u.id !== user?.id);
+  // Fetch all users from backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users`);
+        const data = await res.json();
+        setAllUsers(data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // Filter connections (all users except logged-in user)
+  useEffect(() => {
+    if (!user || allUsers.length === 0) return;
+    const filtered = allUsers.filter((u) => u.id !== user.id);
+    setConnections(filtered);
+  }, [user, allUsers]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -28,12 +46,12 @@ export default function ConnectionsPage() {
                 onClick={() => navigate(`/profile/${conn.id}`)}
               >
                 <img
-                  src={conn.profileImage}
-                  alt={conn.name}
+                  src={conn.profileImage || "/default-avatar.png"}
+                  alt={conn.username}
                   className="w-20 h-20 rounded-full mb-3"
                 />
-                <p className="font-medium text-lg">{conn.name}</p>
-                <p className="text-sm text-gray-500">{conn.role}</p>
+                <p className="font-medium text-lg">{conn.username}</p>
+                <p className="text-sm text-gray-500">{conn.bio}</p>
               </div>
             ))}
           </div>
