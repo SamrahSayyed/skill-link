@@ -1,3 +1,4 @@
+// src/pages/ProfilePage.js
 import React, { useEffect, useState } from "react";
 import SidebarLeft from "../components/SidebarLeft";
 import ProfileAvatar from "../components/ProfileAvatar";
@@ -16,6 +17,8 @@ export default function ProfilePage() {
   const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState("");
   const [allSkills, setAllSkills] = useState([]);
+  const [newSkillType, setNewSkillType] = useState("learn");
+  const [newSkillLevel, setNewSkillLevel] = useState("beginner");
 
   const API_URL = "http://localhost:5000/api";
 
@@ -29,27 +32,19 @@ export default function ProfilePage() {
     const userId = id || currentUser.id;
 
     // fetch user
-    axios.get(`${API_URL}/users/${userId}`).then((res) => {
-      setProfileUser(res.data);
-      setEditForm({ bio: res.data.bio || "", location: res.data.location || "" });
-    });
+    axios
+      .get(`${API_URL}/users/${userId}`)
+      .then((res) => {
+        setProfileUser(res.data);
+        setEditForm({
+          bio: res.data.bio || "",
+          location: res.data.location || "",
+        });
+      })
+      .catch((err) => console.error("Error loading profile:", err));
 
     // fetch user's skills
-    axios
-      .get(`${API_URL}/user-skills/user/${userId}`)
-      .then((res) => {
-        const mappedSkills = res.data.map((s) => ({
-          user_skill_id: s.id,
-          skill_id: s.skill_id,
-          skill_name: s.skill_name,
-          category: s.category,
-          learning_type: s.learning_type,
-          level: s.level,
-          created_at: s.created_at,
-        }));
-        setSkills(mappedSkills);
-      })
-      .catch((err) => console.error("Error fetching skills:", err));
+    fetchSkills(userId);
 
     // fetch all skills
     axios
@@ -57,6 +52,23 @@ export default function ProfilePage() {
       .then((res) => setAllSkills(res.data))
       .catch((err) => console.error("Error loading skills:", err));
   }, [id, currentUser, navigate]);
+
+  const fetchSkills = (userId) => {
+    axios
+      .get(`${API_URL}/user-skills/user/${userId}`)
+      .then((res) => {
+        const mappedSkills = res.data.map((s) => ({
+          user_skill_id: s.id,
+          skill_id: s.skill_id,
+          skill_name: s.skill_name,
+          type: s.type, // DB column 'type' (learn/teach)
+          experience_level: s.experience_level, // DB column 'experience_level'
+          created_at: s.created_at,
+        }));
+        setSkills(mappedSkills);
+      })
+      .catch((err) => console.error("Error fetching skills:", err));
+  };
 
   if (!profileUser) return null;
 
@@ -91,52 +103,41 @@ export default function ProfilePage() {
   const handleAddSkill = async () => {
     if (!newSkill.trim()) return;
 
+    const skillObj = allSkills.find((s) => s.name.toLowerCase() === newSkill.toLowerCase());
+    if (!skillObj) {
+      alert("Skill not found. Add it to the 'skills' table first.");
+      return;
+    }
+
+    const alreadyAdded = skills.some((s) => s.skill_id === skillObj.id);
+    if (alreadyAdded) {
+      alert("You already have this skill.");
+      return;
+    }
+
     try {
-      const skillObj = allSkills.find(
-        (s) => s.skill_name.toLowerCase() === newSkill.toLowerCase()
-      );
-
-      if (!skillObj) {
-        alert("Skill not found. Add it to 'skills' table first.");
-        return;
-      }
-
       await axios.post(`${API_URL}/user-skills`, {
         user_id: profileUser.id,
         skill_id: skillObj.id,
-        learning_type: "learn",
-        level: "beginner",
+        type: newSkillType,
+        experience_level: newSkillLevel,
       });
 
       setNewSkill("");
-      const res = await axios.get(`${API_URL}/user-skills/user/${profileUser.id}`);
-      setSkills(res.data.map((s) => ({
-        user_skill_id: s.id,
-        skill_id: s.skill_id,
-        skill_name: s.skill_name,
-        category: s.category,
-        learning_type: s.learning_type,
-        level: s.level,
-        created_at: s.created_at,
-      })));
+      setNewSkillType("learn");
+      setNewSkillLevel("beginner");
+
+      fetchSkills(profileUser.id);
     } catch (err) {
       console.error("Error adding skill:", err);
+      alert("Failed to add skill.");
     }
   };
 
   const handleDeleteSkill = async (userSkillId) => {
     try {
       await axios.delete(`${API_URL}/user-skills/${userSkillId}`);
-      const res = await axios.get(`${API_URL}/user-skills/user/${profileUser.id}`);
-      setSkills(res.data.map((s) => ({
-        user_skill_id: s.id,
-        skill_id: s.skill_id,
-        skill_name: s.skill_name,
-        category: s.category,
-        learning_type: s.learning_type,
-        level: s.level,
-        created_at: s.created_at,
-      })));
+      fetchSkills(profileUser.id);
     } catch (err) {
       console.error("Error deleting skill:", err);
     }
@@ -148,8 +149,8 @@ export default function ProfilePage() {
 
     try {
       await axios.put(`${API_URL}/user-skills/${userSkillId}`, {
-        learning_type: key === "learning_type" ? value : skill.learning_type,
-        level: key === "level" ? value : skill.level,
+        type: key === "type" ? value : skill.type,
+        experience_level: key === "experience_level" ? value : skill.experience_level,
       });
 
       setSkills((prev) =>
@@ -159,6 +160,7 @@ export default function ProfilePage() {
       );
     } catch (err) {
       console.error("Error updating skill:", err);
+      alert("Failed to update skill.");
     }
   };
 
@@ -198,95 +200,119 @@ export default function ProfilePage() {
           {/* Profile Info */}
           <div className="pt-16 text-center">
             <h1 className="text-2xl font-semibold">{profileUser.username}</h1>
+
             {!isEditing ? (
               <p className="text-sm text-gray-600">{profileUser.location || "No location"}</p>
             ) : (
               <input
                 type="text"
+                placeholder="Add Location"
                 className="mt-2 border rounded p-1 w-60 text-center"
                 value={editForm.location}
                 onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
               />
             )}
 
-            {/* Bio */}
             {!isEditing ? (
               <p className="mt-3 text-gray-700">{profileUser.bio || "No bio yet"}</p>
             ) : (
               <textarea
+                placeholder="Add Bio"
                 className="mt-3 border rounded p-2 w-full max-w-md"
                 value={editForm.bio}
                 onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
               />
             )}
 
-            {/* Skills */}
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill.user_skill_id}
-                  className="px-3 py-1 bg-gray-100 rounded-lg flex items-center gap-1"
-                >
-                  {!isEditing ? (
-                    <>
-                      {skill.skill_name} ({skill.level})
-                    </>
-                  ) : (
-                    <>
-                      {skill.skill_name}
+            {/* -------------------- Skills Section -------------------- */}
+            <div className="mt-4 flex flex-col items-center gap-3">
+              {/* Existing Skills */}
+              <div className="flex flex-wrap justify-center gap-2">
+                {skills.map((skill) => (
+                  <div
+                    key={skill.user_skill_id}
+                    className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-lg"
+                  >
+                    <span>{skill.skill_name}</span>
 
-                      <select
-                        value={skill.level}
-                        onChange={(e) =>
-                          handleSkillUpdate(skill.user_skill_id, "level", e.target.value)
-                        }
-                        className="ml-1 border rounded p-1 text-sm"
-                      >
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
-                      </select>
+                    {isEditing && (
+                      <>
+                        <select
+                          value={skill.experience_level}
+                          onChange={(e) =>
+                            handleSkillUpdate(skill.user_skill_id, "experience_level", e.target.value)
+                          }
+                          className="border rounded p-1 text-sm"
+                        >
+                          <option value="beginner">Beginner</option>
+                          <option value="intermediate">Intermediate</option>
+                          <option value="advanced">Advanced</option>
+                        </select>
 
-                      <select
-                        value={skill.learning_type}
-                        onChange={(e) =>
-                          handleSkillUpdate(skill.user_skill_id, "learning_type", e.target.value)
-                        }
-                        className="ml-1 border rounded p-1 text-sm"
-                      >
-                        <option value="learn">Learn</option>
-                        <option value="teach">Teach</option>
-                      </select>
+                        <select
+                          value={skill.type}
+                          onChange={(e) =>
+                            handleSkillUpdate(skill.user_skill_id, "type", e.target.value)
+                          }
+                          className="border rounded p-1 text-sm"
+                        >
+                          <option value="learn">Learn</option>
+                          <option value="teach">Teach</option>
+                        </select>
 
-                      <button
-                        onClick={() => handleDeleteSkill(skill.user_skill_id)}
-                        className="text-red-500 hover:text-red-700 ml-1"
-                      >
-                        ×
-                      </button>
-                    </>
-                  )}
-                </span>
-              ))}
-            </div>
+                        <button
+                          onClick={() => handleDeleteSkill(skill.user_skill_id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          ×
+                        </button>
+                      </>
+                    )}
 
-            {isOwnProfile && isEditing && (
-              <div className="mt-4 flex justify-center gap-2">
-                <input
-                  type="text"
-                  placeholder="Add new skill..."
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  className="border p-1 rounded"
-                />
-                <button
-                  onClick={handleAddSkill}
-                  className="bg-blue-500 text-white px-3 py-1 rounded"
-                >
-                  Add
-                </button>
+                    {!isEditing && <span>({skill.experience_level}, {skill.type})</span>}
+                  </div>
+                ))}
               </div>
-            )}
+
+              {/* Add New Skill */}
+              {isOwnProfile && isEditing && (
+                <div className="mt-2 flex flex-wrap justify-center gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder="New skill name..."
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    className="border p-1 rounded"
+                  />
+
+                  <select
+                    value={newSkillType}
+                    onChange={(e) => setNewSkillType(e.target.value)}
+                    className="border p-1 rounded"
+                  >
+                    <option value="learn">Learn</option>
+                    <option value="teach">Teach</option>
+                  </select>
+
+                  <select
+                    value={newSkillLevel}
+                    onChange={(e) => setNewSkillLevel(e.target.value)}
+                    className="border p-1 rounded"
+                  >
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                  </select>
+
+                  <button
+                    onClick={handleAddSkill}
+                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Edit/Save Buttons */}
             {isOwnProfile && (
