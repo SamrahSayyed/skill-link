@@ -28,20 +28,31 @@ export default function DashboardPage() {
   }, []);
 
   // ----------------------
-  // Fetch all posts
-  // ----------------------
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/posts`);
-        const data = await res.json();
+// Fetch all posts
+// ----------------------
+useEffect(() => {
+  const fetchPosts = async () => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/posts`);
+      const data = await res.json();
+      console.log("Fetched posts:", data); // 👈 Check what backend returns
+
+      // ✅ FIX: Ensure posts is always an array
+      if (Array.isArray(data)) {
         setPosts(data);
-      } catch (err) {
-        console.error("Error fetching posts:", err);
+      } else if (Array.isArray(data.posts)) {
+        setPosts(data.posts);
+      } else {
+        setPosts([]); // fallback if format unexpected
       }
-    };
-    fetchPosts();
-  }, []);
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      setPosts([]); // ensure posts always an array
+    }
+  };
+  fetchPosts();
+}, []);
+
 
   // ----------------------
   // Map posts to user info
@@ -87,9 +98,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Posts Feed */}
-          {postsWithUser.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
+{Array.isArray(postsWithUser) && postsWithUser.length > 0 ? (
+  postsWithUser.map((post) => <PostCard key={post.id} post={post} />)
+) : (
+  <p className="text-gray-500 text-center mt-4">No posts yet.</p>
+)}
+
         </main>
 
         {/* Connections Section */}
