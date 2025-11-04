@@ -1,29 +1,45 @@
-// src/pages/PostCreationPage.js
 import React, { useState } from "react";
 import MiniNavbar from "../components/MiniNavbar";
 import SidebarLeft from "../components/SidebarLeft";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import axios from "axios";
 
 export default function PostCreationPage() {
   const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useUser();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Post created:", content);
-    navigate("/dashboard"); // ✅ Redirect to dashboard after creating post
+    if (!content.trim()) return;
+
+    try {
+      setLoading(true);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/posts`, {
+        user_id: user.id,
+        content,
+      });
+
+      console.log("Post created successfully:", res.data);
+
+      // Go back to dashboard with the new post data
+      navigate("/dashboard", { state: { newPost: res.data } });
+    } catch (err) {
+      console.error("Error creating post:", err);
+      alert("Failed to create post. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleClose = () => {
-    navigate("/dashboard"); // ✅ Redirect to dashboard when closing
-  };
+  const handleClose = () => navigate("/dashboard");
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* ✅ MiniNavbar only */}
       <MiniNavbar />
 
-      {/* ✅ Layout with left sidebar */}
       <div className="flex flex-1">
         <SidebarLeft />
 
@@ -42,7 +58,6 @@ export default function PostCreationPage() {
                 required
               />
 
-              {/* ✅ Buttons right aligned */}
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
@@ -53,9 +68,10 @@ export default function PostCreationPage() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-primaryblue text-white py-2 px-4 rounded-lg hover:bg-accentpink transition"
+                  disabled={loading}
+                  className="bg-primaryblue text-white py-2 px-4 rounded-lg hover:bg-accentpink transition disabled:opacity-50"
                 >
-                  Post
+                  {loading ? "Posting..." : "Post"}
                 </button>
               </div>
             </form>

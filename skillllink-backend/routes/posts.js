@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../config/db');
 
 // ----------------------
-// GET all posts with user info
+// GET all posts with username
 // ----------------------
 router.get('/', async (req, res) => {
   try {
@@ -12,11 +12,9 @@ router.get('/', async (req, res) => {
         posts.id AS post_id,
         posts.user_id,
         posts.content,
-        posts.post_image,
-        posts.post_likes,
+        posts.image_url,
         posts.created_at,
-        users.username,
-        users.profileImage
+        users.username
       FROM posts
       LEFT JOIN users ON posts.user_id = users.id
       ORDER BY posts.created_at DESC
@@ -29,7 +27,7 @@ router.get('/', async (req, res) => {
 });
 
 // ----------------------
-// GET posts by user with user info
+// GET posts by specific user
 // ----------------------
 router.get('/user/:user_id', async (req, res) => {
   const { user_id } = req.params;
@@ -39,11 +37,9 @@ router.get('/user/:user_id', async (req, res) => {
         posts.id AS post_id,
         posts.user_id,
         posts.content,
-        posts.post_image,
-        posts.post_likes,
+        posts.image_url,
         posts.created_at,
-        users.username,
-        users.profileImage
+        users.username
       FROM posts
       LEFT JOIN users ON posts.user_id = users.id
       WHERE posts.user_id = ?
@@ -62,10 +58,10 @@ router.get('/user/:user_id', async (req, res) => {
 });
 
 // ----------------------
-// CREATE new post
+// CREATE new text-only post
 // ----------------------
 router.post('/', async (req, res) => {
-  const { user_id, content, post_image } = req.body;
+  const { user_id, content } = req.body;
 
   if (!user_id || !content) {
     return res.status(400).json({ error: 'user_id and content are required' });
@@ -73,21 +69,18 @@ router.post('/', async (req, res) => {
 
   try {
     const [result] = await db.query(
-      'INSERT INTO posts (user_id, content, post_image) VALUES (?, ?, ?)',
-      [user_id, content, post_image || null]
+      'INSERT INTO posts (user_id, content, image_url) VALUES (?, ?, ?)',
+      [user_id, content, null] // text-only post
     );
 
-    // Return the post with user info
     const [rows] = await db.query(`
       SELECT 
         posts.id AS post_id,
         posts.user_id,
         posts.content,
-        posts.post_image,
-        posts.post_likes,
+        posts.image_url,
         posts.created_at,
-        users.username,
-        users.profileImage
+        users.username
       FROM posts
       LEFT JOIN users ON posts.user_id = users.id
       WHERE posts.id = ?

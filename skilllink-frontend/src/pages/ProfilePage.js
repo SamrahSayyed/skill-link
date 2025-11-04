@@ -216,12 +216,12 @@ export default function ProfilePage() {
             {!isEditing ? (
               <p className="mt-3 text-gray-700">{profileUser.bio || "No bio yet"}</p>
             ) : (
-              <textarea
+              <div><textarea
                 placeholder="Add Bio"
                 className="mt-3 border rounded p-2 w-full max-w-md"
                 value={editForm.bio}
                 onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-              />
+              /></div>
             )}
 
             {/* -------------------- Skills Section -------------------- */}

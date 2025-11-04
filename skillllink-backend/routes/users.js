@@ -37,42 +37,36 @@ router.get('/:id', async (req, res) => {
 });
 
 // ----------------------
-// REGISTER user
+// SIGNUP / REGISTER user
 // ----------------------
-router.post('/register', async (req, res) => {
-   console.log('Register body:', req.body); // add this
-  const { username, email, password_hash, location, bio } = req.body;
+router.post('/', async (req, res) => {
+  const { username, email, password, location, bio } = req.body;
 
-  if (!username || !email || !password_hash) {
+  if (!username || !email || !password) {
     return res.status(400).json({ error: 'Username, email and password are required' });
   }
 
   try {
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password_hash, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await db.query(
       'INSERT INTO users (username, email, password_hash, location, bio) VALUES (?, ?, ?, ?, ?)',
-      [username, email, hashedPassword, location, bio]
+      [username, email, hashedPassword, location || null, bio || null]
     );
-
-    console.log('Inserted user id:', result.insertId);
 
     res.status(201).json({
       id: result.insertId,
       username,
       email,
-      location,
-      bio
+      location: location || null,
+      bio: bio || null
     });
   } catch (err) {
-    console.error('REGISTER ERROR:', err);
-
-    // Handle duplicate email
+    console.error('SIGNUP ERROR:', err);
     if (err.code === 'ER_DUP_ENTRY') {
       return res.status(400).json({ error: 'Email already exists' });
     }
-
     res.status(500).json({ error: err.message });
   }
 });
@@ -81,9 +75,9 @@ router.post('/register', async (req, res) => {
 // LOGIN user
 // ----------------------
 router.post('/login', async (req, res) => {
-  const { email, password_hash } = req.body;
+  const { email, password } = req.body;
 
-  if (!email || !password_hash) {
+  if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
@@ -99,13 +93,12 @@ router.post('/login', async (req, res) => {
 
     const user = rows[0];
 
-    // Compare hashed passwords
-    const match = await bcrypt.compare(password_hash, user.password_hash);
+    // Compare hashed password
+    const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Remove password_hash from response
     delete user.password_hash;
 
     res.json({

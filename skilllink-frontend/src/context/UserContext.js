@@ -21,7 +21,7 @@ export const UserProvider = ({ children }) => {
     try {
       const res = await axios.post(`${API_URL}/login`, {
         email,
-        password_hash: password, // send raw password, backend hashes it
+        password_hash: password, // backend expects 'password_hash'
       });
 
       const loggedInUser = res.data.user;
@@ -37,19 +37,21 @@ export const UserProvider = ({ children }) => {
   };
 
   // ---------------- SIGNUP ----------------
-  const signup = async ({ username, email, password }) => {
+  const signup = async ({ username, email, password, location = "", bio = "" }) => {
     try {
+      // ✅ Backend expects POST /register with password_hash
       const res = await axios.post(`${API_URL}/register`, {
         username,
         email,
-        password_hash: password, // backend hashes it
-        location: "",            // optional fields
-        bio: "",
+        password_hash: password,
+        location,
+        bio,
       });
 
-      const newUser = res.data;
-      setUser(newUser);
-      localStorage.setItem("loggedInUser", JSON.stringify(newUser));
+      // Save user to context and localStorage (auto-login)
+      const createdUser = res.data;
+      setUser(createdUser);
+      localStorage.setItem("loggedInUser", JSON.stringify(createdUser));
 
       return { success: true };
     } catch (err) {
@@ -70,7 +72,7 @@ export const UserProvider = ({ children }) => {
       {children}
     </UserContext.Provider>
   );
-}; // ✅ This closing brace was missing
+};
 
 // ---------------- CUSTOM HOOK ----------------
 export const useUser = () => {

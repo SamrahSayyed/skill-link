@@ -3,6 +3,8 @@ import SidebarLeft from "../components/SidebarLeft";
 import PostCard from "../components/PostCard";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 
 export default function DashboardPage() {
   const { user } = useUser();
@@ -10,6 +12,15 @@ export default function DashboardPage() {
 
   const [allUsers, setAllUsers] = useState([]); // all users from backend
   const [posts, setPosts] = useState([]);
+
+  const location = useLocation();
+
+useEffect(() => {
+  if (location.state?.newPost) {
+    setPosts((prev) => [location.state.newPost, ...prev]);
+  }
+}, [location.state]);
+
 
   // ----------------------
   // Fetch all users
