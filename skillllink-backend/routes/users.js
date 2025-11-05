@@ -37,33 +37,32 @@ router.get('/:id', async (req, res) => {
 });
 
 // ----------------------
-// SIGNUP / REGISTER user
+// REGISTER
 // ----------------------
-router.post('/', async (req, res) => {
-  const { username, email, password, location, bio } = req.body;
+router.post('/register', async (req, res) => {
+  const { username, email, password, location = "", bio = "" } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ error: 'Username, email and password are required' });
+    return res.status(400).json({ error: 'Username, email, and password are required' });
   }
 
   try {
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await db.query(
       'INSERT INTO users (username, email, password_hash, location, bio) VALUES (?, ?, ?, ?, ?)',
-      [username, email, hashedPassword, location || null, bio || null]
+      [username, email, hashedPassword, location, bio]
     );
 
-    res.status(201).json({
-      id: result.insertId,
-      username,
-      email,
-      location: location || null,
-      bio: bio || null
-    });
+    // Return the newly created user as backend response
+    const [newUserRows] = await db.query(
+      'SELECT id, username, email, location, bio, created_at FROM users WHERE id = ?',
+      [result.insertId]
+    );
+
+    res.status(201).json(newUserRows[0]);
   } catch (err) {
-    console.error('SIGNUP ERROR:', err);
+    console.error('REGISTER ERROR:', err);
     if (err.code === 'ER_DUP_ENTRY') {
       return res.status(400).json({ error: 'Email already exists' });
     }
@@ -72,7 +71,7 @@ router.post('/', async (req, res) => {
 });
 
 // ----------------------
-// LOGIN user
+// LOGIN
 // ----------------------
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -92,9 +91,8 @@ router.post('/login', async (req, res) => {
     }
 
     const user = rows[0];
-
-    // Compare hashed password
     const match = await bcrypt.compare(password, user.password_hash);
+
     if (!match) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -103,7 +101,7 @@ router.post('/login', async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      user
+      user,
     });
   } catch (err) {
     console.error('LOGIN ERROR:', err);
@@ -126,7 +124,12 @@ router.put('/:id', async (req, res) => {
 
     if (result.affectedRows === 0) return res.status(404).json({ error: 'User not found' });
 
-    res.json({ message: 'User updated successfully' });
+    const [updatedUserRows] = await db.query(
+      'SELECT id, username, email, location, bio, created_at FROM users WHERE id = ?',
+      [id]
+    );
+
+    res.json(updatedUserRows[0]);
   } catch (err) {
     console.error('UPDATE USER ERROR:', err);
     res.status(500).json({ error: err.message });

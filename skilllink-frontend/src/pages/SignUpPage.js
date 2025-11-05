@@ -10,8 +10,9 @@ export default function SignUpPage() {
   const [location, setLocation] = useState("");
   const [bio, setBio] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const { signup } = useUser(); // Context signup function
+  const { signup } = useUser(); // from UserContext
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,15 +21,26 @@ export default function SignUpPage() {
 
     // Basic validation
     if (!username.trim() || !email.trim() || !password.trim()) {
-      setError("Username, email and password are required.");
+      setError("Username, email, and password are required.");
       return;
     }
 
-    const result = await signup({ username, email, password, location, bio });
-    if (result.success) {
-      navigate("/dashboard");
-    } else {
-      setError(result.error);
+    setLoading(true);
+
+    try {
+      // Call signup from context
+      const result = await signup({ username, email, password, location, bio });
+
+      if (result.success) {
+        navigate("/dashboard"); // Redirect on success
+      } else {
+        setError(result.error || "Signup failed");
+      }
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("Unexpected error. Check console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,6 +50,7 @@ export default function SignUpPage() {
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Sign Up
         </h2>
+
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
@@ -82,9 +95,14 @@ export default function SignUpPage() {
 
           <button
             type="submit"
-            className="bg-primaryblue hover:bg-accentpink text-white rounded-md py-2 font-semibold"
+            className={`text-white rounded-md py-2 font-semibold ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-primaryblue hover:bg-accentpink"
+            }`}
+            disabled={loading}
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 
