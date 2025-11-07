@@ -1,19 +1,20 @@
 # 🌐 SkillLink
 
-SkillLink is a **student networking platform** where users can share posts, connect with others, and showcase their skills.  
-It’s a full-stack project built with **React**, **Node.js**, and **MySQL**.
+SkillLink is a **student networking and skill-sharing platform** built with **React, Node.js, and MySQL**.  
+Users can share posts, add skills, and connect with others — all in a simple, minimal, and responsive interface.
 
 ---
 
 ## 🚀 Features
 
-- 👤 User registration, login, and authentication (JWT)
-- 🏠 Dashboard feed showing all user posts
-- ✍️ Create, delete, and like posts
-- 💬 Comment on posts
-- 💼 Add skills to your profile
-- 🤝 View other users and send connection requests
-- 🔒 Secure backend APIs with Express and MySQL
+- 👤 User signup, login, and JWT authentication  
+- 🏠 Dashboard feed with all user posts  
+- ✍️ Create, delete, and like posts  
+- 💬 Comment on posts  
+- 💼 Add skills to your profile  
+- 🤝 View and send connection requests  
+- 🎨 UI designed in **Figma**  
+- 🧪 API tested thoroughly using **Postman**
 
 ---
 
@@ -24,9 +25,31 @@ It’s a full-stack project built with **React**, **Node.js**, and **MySQL**.
 
 ---
 
+## ⚙️ Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/skilllink.git
+cd skilllink
+
+# Backend setup
+cd backend
+npm install
+npm start
+
+# Frontend setup
+cd ../frontend
+npm install
+npm start
+
+Backend → http://localhost:5000
+Frontend → http://localhost:3000
+
+
+
 👩‍💻 Author
 
 Samrah Sayyed
-3rd Year EEE | Batch of 2027
+3rd Year EECS | Batch of 2027
 
-Give this repo a ⭐ if you like it!
+⭐ If you like this project, don’t forget to star it on GitHub!
