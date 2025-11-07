@@ -50,6 +50,10 @@ Frontend → http://localhost:3000
 👩‍💻 Author
 
 Samrah Sayyed
+
 3rd Year EECS | Batch of 2027
+
+
+
 
 ⭐ If you like this project, don’t forget to star it on GitHub!
